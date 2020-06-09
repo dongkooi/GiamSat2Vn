@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import ReactEcharts from "echarts-for-react";
 import moment from 'moment';
 import { getDataDaily } from '../../../services/getDataDaily';
+import { Spin } from 'antd';
 
 class ChartYesterday extends Component {
     private intervalInitial = 0;
@@ -11,9 +12,12 @@ class ChartYesterday extends Component {
         temperature: [],
         humidity: [],
         time: [],
+        dustDensity: [],
+        loading: false
     }
 
     componentDidMount() {
+        this.setState({ loading: true })
         getDataDaily().then((data: any) => {
             let arr_temperature = data.data.map((item: any) => (
                 item.temperature
@@ -24,11 +28,15 @@ class ChartYesterday extends Component {
             let arr_time = data.data.map((item: any) => (
                 moment(item.time * 1000).format('HH:mm DD/MM/YYYY')
             ));
-            this.setState({ temperature: arr_temperature, humidity: arr_humidity, time: arr_time })
+            let arr_dustDensity = data.data.map((item: any) => (
+                item.dustDensity
+            ));
+            this.setState({ loading: false, temperature: arr_temperature, humidity: arr_humidity, time: arr_time, dustDensity: arr_dustDensity })
         }).catch((err: any) => {
             console.log(err);
         });
         this.intervalInitial = window.setInterval(() => {
+            this.setState({ loading: true })
             getDataDaily().then((data: any) => {
                 let arr_temperature = data.data.map((item: any) => (
                     item.temperature
@@ -39,12 +47,15 @@ class ChartYesterday extends Component {
                 let arr_time = data.data.map((item: any) => (
                     moment(item.time * 1000).format('HH:mm DD/MM/YYYY')
                 ));
-                this.setState({ temperature: arr_temperature, humidity: arr_humidity, time: arr_time })
+                let arr_dustDensity = data.data.map((item: any) => (
+                    item.dustDensity
+                ));
+                this.setState({ loading: false, temperature: arr_temperature, humidity: arr_humidity, time: arr_time, dustDensity: arr_dustDensity })
             }).catch((err: any) => {
                 console.log(err);
             });
         }
-            , 10000);
+            , 60000);
     }
 
     componentWillUnmount() {
@@ -58,7 +69,7 @@ class ChartYesterday extends Component {
                 trigger: 'axis'
             },
             legend: {
-                data: ['Nhiệt độ', 'Độ ẩm'],
+                data: ['Nhiệt độ', 'Độ ẩm', 'Độ bụi'],
             },
             grid: {
                 left: '3%',
@@ -78,25 +89,31 @@ class ChartYesterday extends Component {
                 {
                     name: 'Nhiệt độ',
                     type: 'line',
-                    // stack: '总量',
                     data: this.state.temperature
                 },
                 {
                     name: 'Độ ẩm',
                     type: 'line',
-                    // stack: '总量',
                     data: this.state.humidity
                 },
+                {
+                    name: 'Độ bụi',
+                    type: 'line',
+                    data: this.state.dustDensity
+                }
             ]
         }
         return (
             <div className="box box-default mb-4">
-                <div className="box-header">Thông tin nhiệt độ độ ẩm</div>
+                <div className="box-header">Thông tin nhiệt độ độ ẩm trong 24h qua</div>
                 <div className="box-body">
-                    <ReactEcharts
-                        option={option}
-                        style={{ height: '400px', width: '100%' }}
-                    />
+                    <Spin spinning={this.state.loading}>
+                        <ReactEcharts
+                            option={option}
+                            style={{ height: '400px', width: '100%' }}
+                        />
+                    </Spin>
+
                 </div>
             </div>
         );

@@ -1,25 +1,9 @@
 import React, { Component } from 'react';
-// import { getDataDaily } from '../../services/getDataDaily';
-// import { getDataRealTime } from '../../services/getDataRealTime';
 import './style.scss'
 import { Row, Col } from 'antd';
 import SensorInfor from './subComponents/SensorInfor';
 import ChartYesterday from './subComponents/ChartYesterday';
 class OverView extends Component {
-
-    // async componentDidMount() {
-    //     getDataDaily().then((data: any) => {
-    //         this.setState({ loading: false})
-    //     }).catch((err: any) => {
-    //         console.log(err);
-    //     });
-    //     await getDataRealTime().then((data: any) => {
-    //         console.log(data);
-    //     }).catch((err: any) => {
-    //         console.log(err);
-    //     })
-    // }
-
     render() {
         return (
             <div className="site-layout-content" style={{ minHeight: window.screen.height - 92 }}>
