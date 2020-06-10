@@ -44,7 +44,7 @@ class SensorInfor extends Component {
                 console.log(err);
             });
         }
-            , 15000);
+            , 5000);
     }
 
     componentWillUnmount() {
